@@ -10,7 +10,7 @@ This is  Proof of Concept Game that uilizes  utilizes zero-knowledge proofs (ZKP
 
 The game's unique feature is the incorporation of real-time weather data as a decisive factor in battle outcomes. We explored Acurast, a decentralized oracle network, to fetch and integrate this data. Acurast's architecture, built on Trusted Execution Environments (TEEs), allows for the secure, confidential, and verifiable acquisition and on-chain submission of weather data. This implementation creates a trustless bridge between off-chain real-world conditions and on-chain game mechanics.
 
-## Failed attempt at incorporating Acurast 
+## Failed attempt at Incorporating Acurast 
 
 One of the main contribution of the project was supposed to be incorporation of TEE Oracle for Mina Ecosystem - however, there was a problem I could not fix in time. 
 
