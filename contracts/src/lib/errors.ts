@@ -13,6 +13,10 @@ export namespace Errors {
     export const CASTLE_DEFENSE_COST = 'Defending army cost is too high';
     export const CASTLE_UNDER_ATTACK = 'Castle is under attack';
 
+    // set weather errors
+    export const INVALID_WEATHER = 'Invalid weather';
+    export const NOT_AUTHORIZED = 'Not authorized to set weather';
+
     // Attacking Army errors
     export const NO_CASTLE = 'Does not have a castle';
     export const CASTLE_NOT_DEFENDED = 'Castle is not defended';

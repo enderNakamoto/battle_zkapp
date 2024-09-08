@@ -196,6 +196,18 @@ export class Battle extends SmartContract {
   @method async updateWeather(
     weather: Field
   ) {
+    // ensure the weather is valid
+    weather.assertLessThanOrEqual(Consts.RAINY, Errors.INVALID_WEATHER);
+
+    // ensure the sender is authorized to update the weather
+    const sender = this.sender.getAndRequireSignatureV2();
+    const senderId = HelperUtils.getPlayerIdFromAddress(sender);
+
+    const WeathermanId = HelperUtils.getPlayerIdFromAddress(Consts.WEATHERMAN);
+    senderId.assertEquals(WeathermanId, Errors.NOT_AUTHORIZED);
+
+
+    // update the weather
     this.currentWeather.set(weather);
   }
 

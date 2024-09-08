@@ -26,6 +26,7 @@ export namespace Consts {
         defendingArmyHash: Consts.EMPTY_FIELD,
       });
 
+
     // filled values
     export const FILLED_FIELD = Field(1);
 
@@ -48,6 +49,8 @@ export namespace Consts {
 
     export const DEFENSE_MODIFIER_SUNNY = Field(100);
     export const DEFENSE_MODIFIER_RAINY = Field(115);
+
+    export const WEATHERMAN = PublicKey.fromBase58('B62qjxToGLu3bgpmdmNxmhdozJQDEAU4N26pWkWzjDsXbszwqjdaHMo');
 
     // Unit constants
     export const ARCHER_SPEED = Field(2);
@@ -77,10 +80,4 @@ export namespace Consts {
 
     // attacking army constants
     export const MAX_ATTACK_COST = Field(1000000);
-
-
-
-
-
-
 }
