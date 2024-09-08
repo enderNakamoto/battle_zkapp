@@ -1,8 +1,9 @@
 ![alt text](cover.png)
 
-Github Links: 
-Weather Oracle: https://github.com/enderNakamoto/acurast_tokyo_weather
-Mina Game: https://github.com/enderNakamoto/battle_zkapp
+## Github Links: 
+* Weather Oracle: https://github.com/enderNakamoto/acurast_tokyo_weather
+* Mina Game: https://github.com/enderNakamoto/battle_zkapp
+* Battle SImulator: https://github.com/enderNakamoto/castle_edo_sim_js
 
 # Tempest Tactician 
 
@@ -34,3 +35,8 @@ https://ipfs.io/ipfs/QmUryNyFSRrh3qbR3FvqiYE1zEMWjtNnH1KcStgLvxk1Ew
 Help with bundling O1js dependencies in a Acurast Processor will be really appreciated. 
 
 Once this succeeds, I can try to integrate Keepers (decentralized cron jobs) to simulate population growth in a turn based game. 
+
+Since, the proof is generated in Client machines and not online, perhaps complex battles can be calculated. Eventually, I hope to incorporate battles simulated in 
+https://github.com/enderNakamoto/castle_edo_sim_js
+
+![alt text](simulation.png)
