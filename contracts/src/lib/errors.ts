@@ -18,4 +18,8 @@ export namespace Errors {
     export const CASTLE_NOT_DEFENDED = 'Castle is not defended';
     export const ALREADY_ATTACKING = 'Castle is already attacking';
     export const ATTACK_COST = 'Attacking army cost is too high';
+
+    // Calculate Battle errors
+    export const NO_ATTACK_SET = 'No attack set';
+    export const DEFENSE_MISTMATCH = 'Defense mismatch';
 }

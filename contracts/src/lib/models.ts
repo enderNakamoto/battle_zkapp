@@ -22,6 +22,7 @@ export class CastleDetails extends Struct({
   plundered: Field,
   attacksWon: Field,
   attacksLost: Field,
+  attackerIndex: Field,
   attackingArmy: Army,
   defendingArmyHash: Field,
 }) {}

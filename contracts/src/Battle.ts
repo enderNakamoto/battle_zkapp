@@ -7,12 +7,14 @@ import {
     Experimental,
     MerkleMapWitness,
     Poseidon,
+    Provable,
   } from 'o1js';
 
 import { Consts } from './lib/consts';
 import { Errors } from './lib/errors';
 import { CastleDetails, Army } from './lib/models'; 
 
+import { ResolveBattleUtils } from './utils/resolveBattle';
 import { InitiateCastleUtils } from './utils/initiateCastle';
 import { HelperUtils } from './utils/common';
 
@@ -183,6 +185,7 @@ export class Battle extends SmartContract {
     const targetCastleDetailsOption = await offchainState.fields.castles.get(targetIndex);
     const targetCastleDetails = targetCastleDetailsOption.orElse(Consts.EMPTY_CASTLE);
     targetCastleDetails.attackingArmy = attackingArmy;
+    targetCastleDetails.attackerIndex = playerId;
     offchainState.fields.castles.overwrite(targetIndex, targetCastleDetails);
 
     // increment the number of attacks
@@ -197,15 +200,87 @@ export class Battle extends SmartContract {
   }
 
   @method async resolveBattle(
+    defendingArmy: Army,
     targetIndex: Field,
   ){
-    // verify the sender owns a castle
+    // verify the sender owns the castle that is being resolved
+    const sender = this.sender.getAndRequireSignatureV2();
+    const playerId = HelperUtils.getPlayerIdFromAddress(sender);
+    const targetOwnershipOption = await offchainState.fields.ownership.get(targetIndex);
+    const targetOwnership = targetOwnershipOption.orElse(Consts.EMPTY_FIELD);
+    playerId.assertEquals(targetOwnership, Errors.NOT_OWNER);
 
     // verify that the castle is under attack
+    const targetCastleDetailsOption = await offchainState.fields.castles.get(targetIndex);
+    const targetCastleDetails = targetCastleDetailsOption.orElse(Consts.EMPTY_CASTLE);
+    const attackingArmy = targetCastleDetails.attackingArmy;
+    const attackingArmyCost = attackingArmy.totalCost();
+    attackingArmyCost.assertGreaterThan(Field(0), Errors.NO_ATTACK_SET);
 
+    // verify the defense used to resolve the battle
+    ResolveBattleUtils.verifyDefendingArmyHash(
+      targetCastleDetails,
+      defendingArmy
+    );
+    
     // calculate battle 
+    const attackerId = targetCastleDetails.attackerIndex;
+    const attackingCastleDetailsOption = await offchainState.fields.castles.get(attackerId);
+    const attackingCastleDetails = attackingCastleDetailsOption.orElse(Consts.EMPTY_CASTLE);
+    const attackingFaction = attackingCastleDetails.faction;
 
-    // update the castle details
+    const weather = this.currentWeather.getAndRequireEquals();
+    const defendingFaction = targetCastleDetails.faction;
+    
+    const didDefenderWin = ResolveBattleUtils.calculateWinner(
+      weather,
+      attackingFaction,
+      defendingFaction,
+      attackingArmy,
+      defendingArmy
+    );
 
+    const NewDefendedDelta = Provable.if(
+        didDefenderWin.equals(Field(1)), 
+        Consts.FILLED_FIELD, 
+        Consts.EMPTY_FIELD
+    );
+
+    const NewPlunderedDelta = Provable.if(
+        didDefenderWin.equals(Field(1)), 
+        Consts.EMPTY_FIELD, 
+        Consts.FILLED_FIELD
+    );
+
+    const NewAttacksWonDelta = Provable.if(
+        didDefenderWin.equals(Field(1)), 
+        Consts.EMPTY_FIELD, 
+        Consts.FILLED_FIELD
+    );
+
+    const NewAttacksLostDelta = Provable.if(
+        didDefenderWin.equals(Field(1)), 
+        Consts.FILLED_FIELD, 
+        Consts.EMPTY_FIELD
+    );
+
+    // update the castle details - points and reset the attack
+    targetCastleDetails.defended = targetCastleDetails.defended.add(NewDefendedDelta);
+    targetCastleDetails.plundered = targetCastleDetails.plundered.add(NewPlunderedDelta);
+    targetCastleDetails.attackerIndex = Consts.EMPTY_FIELD;
+    targetCastleDetails.attackingArmy = Consts.EMPTY_ARMY;
+
+    offchainState.fields.castles.overwrite(targetIndex, targetCastleDetails);
+    offchainState.fields.underAttack.overwrite(targetIndex, Consts.EMPTY_FIELD);
+
+    attackingCastleDetails.attacksWon = attackingCastleDetails.attacksWon.add(NewAttacksWonDelta);
+    attackingCastleDetails.attacksLost = attackingCastleDetails.attacksLost.add(NewAttacksLostDelta);
+
+    offchainState.fields.castles.overwrite(attackerId, attackingCastleDetails);
+    offchainState.fields.isAttacking.overwrite(attackerId, Consts.EMPTY_FIELD);
+
+    // increment the number of attacks
+    const numAttacks = this.numberOfAttacks.getAndRequireEquals();
+    this.numberOfAttacks.set(numAttacks.sub(Field(1)));
   }   
 }

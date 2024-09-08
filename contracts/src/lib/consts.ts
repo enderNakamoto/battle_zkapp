@@ -21,6 +21,7 @@ export namespace Consts {
         plundered: Consts.EMPTY_FIELD,
         attacksWon: Consts.EMPTY_FIELD,
         attacksLost: Consts.EMPTY_FIELD,
+        attackerIndex: Consts.EMPTY_FIELD,
         attackingArmy: Consts.EMPTY_ARMY,
         defendingArmyHash: Consts.EMPTY_FIELD,
       });
@@ -32,6 +33,21 @@ export namespace Consts {
     export const HUMANS = Field(0);
     export const ELVES = Field(1);
     export const DWARVES = Field(2);
+
+    export const DEFENSE_MODIFIER_HUMANS = Field(100);
+    export const DEFENSE_MODIFIER_ELVES = Field(80);
+    export const DEFENSE_MODIFIER_DWARVES = Field(130);
+
+    export const ATTACK_MODIFIER_HUMANS = Field(100);
+    export const ATTACK_MODIFIER_ELVES = Field(120);
+    export const ATTACK_MODIFIER_DWARVES = Field(70);
+
+    // weather constants
+    export const SUNNY = Field(0);
+    export const RAINY = Field(1);
+
+    export const DEFENSE_MODIFIER_SUNNY = Field(100);
+    export const DEFENSE_MODIFIER_RAINY = Field(115);
 
     // Unit constants
     export const ARCHER_SPEED = Field(2);
@@ -61,6 +77,9 @@ export namespace Consts {
 
     // attacking army constants
     export const MAX_ATTACK_COST = Field(1000000);
+
+
+
 
 
 
