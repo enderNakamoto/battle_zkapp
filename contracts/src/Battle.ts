@@ -142,6 +142,7 @@ export class Battle extends SmartContract {
   }
 
   @method async setAttack(
+    targetIndex: Field,
     attackingArmy: Army
   ) {
     // verify the sender owns a castle
@@ -165,8 +166,28 @@ export class Battle extends SmartContract {
     // verify the cost of the attack
     const totalCost = attackingArmy.totalCost();
     totalCost.assertLessThanOrEqual(Consts.MAX_ATTACK_COST, Errors.ATTACK_COST);
-    // update the attack
+
+    // make sure the target castle has defense
+    const isDefendedTargetOption = await offchainState.fields.defenseSet.get(targetIndex);
+    const isDefendedTarget = isDefendedTargetOption.orElse(Consts.EMPTY_FIELD);
+    isDefendedTarget.assertEquals(Consts.FILLED_FIELD, Errors.CASTLE_NOT_DEFENDED);
+
+    // make sure the target castle is not already under attack
+    const isUnderAttackOption = await offchainState.fields.underAttack.get(targetIndex);
+    const isUnderAttack = isUnderAttackOption.orElse(Consts.EMPTY_FIELD);
+    isUnderAttack.assertEquals(Consts.EMPTY_FIELD, Errors.CASTLE_UNDER_ATTACK);
+
     // set the attack offchain
+    offchainState.fields.isAttacking.overwrite(castleIndex, Consts.FILLED_FIELD);
+    offchainState.fields.underAttack.overwrite(targetIndex, Consts.FILLED_FIELD);
+    const targetCastleDetailsOption = await offchainState.fields.castles.get(targetIndex);
+    const targetCastleDetails = targetCastleDetailsOption.orElse(Consts.EMPTY_CASTLE);
+    targetCastleDetails.attackingArmy = attackingArmy;
+    offchainState.fields.castles.overwrite(targetIndex, targetCastleDetails);
+
+    // increment the number of attacks
+    const numAttacks = this.numberOfAttacks.getAndRequireEquals();
+    this.numberOfAttacks.set(numAttacks.add(Field(1)));
   }
 
   @method async updateWeather(
@@ -175,11 +196,16 @@ export class Battle extends SmartContract {
     this.currentWeather.set(weather);
   }
 
-  // @method async resolveAttack(
-  //   attackingArmy: DefendingArmy,
-  //   castleIndex: Field
-  // ) {
-  // }
- 
+  @method async resolveBattle(
+    targetIndex: Field,
+  ){
+    // verify the sender owns a castle
 
+    // verify that the castle is under attack
+
+    // calculate battle 
+
+    // update the castle details
+
+  }   
 }
